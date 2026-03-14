@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Korki Cloud Mining</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --primary: #f59e0b; /* Bitcoin Gold */
+            --primary-hover: #d97706;
+            --secondary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            
+            --safe-top: env(safe-area-inset-top, 24px);
+            --safe-bottom: env(safe-area-inset-bottom, 24px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #000;
+            color: var(--text-main);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            max-height: 100vh;
+            background-color: var(--bg-dark);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        @media (min-width: 481px) {
+            #app-container {
+                height: min(90vh, 850px);
+                border-radius: 24px;
+                border: 8px solid #222;
+            }
+        }
+
+        /* --- Views --- */
+        .view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--bg-dark);
+            z-index: 10;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* --- Auth View --- */
+        #auth-view {
+            padding: clamp(2rem, 5vw, 3rem);
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, var(--primary), #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* --- Main App Layout --- */
+        .header {
+            padding: calc(var(--safe-top) + 1rem) 1.5rem 1rem;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            z-index: 20;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-badge {
+            background: var(--surface-light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            padding-bottom: calc(80px + var(--safe-bottom));
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Hide scrollbar */
+        .content-area::-webkit-scrollbar { display: none; }
+        .content-area { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding-bottom: var(--safe-bottom);
+            z-index: 20;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            filter: grayscale(100%) opacity(0.7);
+            transition: all 0.2s;
+        }
+
+        .nav-item.active .nav-icon {
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* --- Tabs Content --- */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Cards & Components --- */
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--surface), #2a1f0c);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::after {
+            content: '₿';
+            position: absolute;
+            right: -20px;
+            bottom: -40px;
+            font-size: 8rem;
+            color: rgba(245, 158, 11, 0.05);
+            pointer-events: none;
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .balance-currency {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: var(--surface-light);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .stat-val {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* --- Mining Control --- */
+        .mining-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .mining-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 4px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .mining-circle.active {
+            border-color: var(--success);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .mining-circle.active::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 50%;
+            border: 2px solid var(--success);
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        .mining-icon {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .mining-circle.active .mining-icon {
+            animation: mine-action 1s infinite alternate;
+        }
+
+        .mining-status-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .mining-circle.active .mining-status-text {
+            color: var(--success);
+        }
+
+        .power-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--surface-light);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+
+        .power-btn:active {
+            transform: scale(0.9);
+        }
+
+        .power-btn.active {
+            background: var(--danger);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* --- Wallet List --- */
+        .asset-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .asset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--surface-light);
+            border-radius: 12px;
+        }
+
+        .asset-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .asset-icon {
+            font-size: 1.8rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--surface);
+            border-radius: 50%;
+        }
+
+        .asset-name {
+            font-weight: bold;
+        }
+
+        .asset-symbol {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .asset-balance {
+            text-align: right;
+        }
+
+        .asset-val {
+            font-weight: bold;
+        }
+
+        .asset-usd {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* --- Withdraw Form --- */
+        .withdraw-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: var(--surface-light);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-pending { color: var(--primary); }
+        .status-completed { color: var(--success); }
+
+        /* --- Toast Notification --- */
+        #toast {
+            position: absolute;
+            top: calc(var(--safe-top) + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--surface-light);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- Animations --- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            80%, 100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        @keyframes mine-action {
+            0% { transform: rotate(-10deg); }
+            100% { transform: rotate(10deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    
+    <!-- Toast Notification -->
+    <div id="toast">🔔 Notification</div>
+
+    <!-- AUTH VIEW -->
+    <div id="auth-view" class="view active">
+        <div class="logo-container">
+            <div class="logo-icon">☁️⛏️</div>
+            <div class="logo-text">KORKI CLOUD</div>
+            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Next-Gen Crypto Mining</div>
+        </div>
+
+        <div class="auth-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" onclick="app.login()" style="margin-top: 1rem;">
+                🚀 Start Mining
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP VIEW -->
+    <div id="main-view" class="view">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                ☁️ Korki
+            </div>
+            <div class="user-badge" onclick="app.logout()">
+                👤 <span id="display-username">User</span>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            
+            <!-- DASHBOARD TAB -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="card balance-card">
+                    <div class="card-label">Total Mined Balance</div>
+                    <div class="balance-amount">
+                        <span id="dash-btc-balance">0.00000000</span>
+                        <span class="balance-currency">BTC</span>
+                    </div>
+                    <div style="color: var(--text-muted); margin-top: 0.5rem;">
+                        ≈ $<span id="dash-usd-balance">0.00</span> USD
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="card-label">Active Plan</div>
+                        <div class="stat-val" style="color: var(--primary);">Pro Miner V2</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="card-label">Hash Rate</div>
+                        <div class="stat-val">150 TH/s</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="card-label">Daily Est.</div>
+                        <div class="stat-val">0.00012 BTC</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="card-label">Network</div>
+                        <div class="stat-val" style="color: var(--success);">🟢 Online</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label" style="margin-bottom: 1rem;">Recent Activity</div>
+                    <div class="history-list" id="dash-activity">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MINING TAB -->
+            <div id="tab-mining" class="tab-content">
+                <div class="card" style="text-align: center;">
+                    <h2>Cloud Rig Status</h2>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Connect to Korki servers to start earning.</p>
+                </div>
+
+                <div class="mining-control">
+                    <div id="mining-indicator" class="mining-circle">
+                        <div class="mining-icon">⛏️</div>
+                        <div id="mining-status-text" class="mining-status-text">OFFLINE</div>
+                    </div>
+
+                    <button id="btn-power" class="power-btn" onclick="app.toggleMining()">
+                        ⚡
+                    </button>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Tap to Start/Stop</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="card-label">Session Earnings</div>
+                        <div class="stat-val" style="color: var(--success);">+<span id="session-earned">0.00000000</span></div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="card-label">Uptime</div>
+                        <div class="stat-val" id="mining-uptime">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WALLET TAB -->
+            <div id="tab-wallet" class="tab-content">
+                <div class="card">
+                    <div class="card-label">Assets</div>
+                    <div class="asset-list">
+                        <div class="asset-item">
+                            <div class="asset-info">
+                                <div class="asset-icon">₿</div>
+                                <div>
+                                    <div class="asset-name">Bitcoin</div>
+                                    <div class="asset-symbol">BTC</div>
+                                </div>
+                            </div>
+                            <div class="asset-balance">
+                                <div class="asset-val" id="wallet-btc">0.00000000</div>
+                                <div class="asset-usd">$<span id="wallet-btc-usd">0.00</span></div>
+                            </div>
+                        </div>
+                        <div class="asset-item">
+                            <div class="asset-info">
+                                <div class="asset-icon" style="color: #26a17b;">₮</div>
+                                <div>
+                                    <div class="asset-name">Tether</div>
+                                    <div class="asset-symbol">USDT</div>
+                                </div>
+                            </div>
+                            <div class="asset-balance">
+                                <div class="asset-val">0.00</div>
+                                <div class="asset-usd">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">Withdraw Funds</h3>
+                    <div class="withdraw-form">
+                        <div class="input-group">
+                            <label>Amount (BTC)</label>
+                            <input type="number" id="withdraw-amount" placeholder="0.00" step="0.0001" min="0.0005">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); text-align: right;">Min: 0.0005 BTC</div>
+                        </div>
+                        <div class="input-group">
+                            <label>BTC Wallet Address</label>
+                            <input type="text" id="withdraw-address" placeholder="bc1q...">
+                        </div>
+                        <button class="btn btn-primary" onclick="app.requestWithdrawal()">
+                            📤 Request Withdrawal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="app.switchTab('dashboard', this)">
+                <div class="nav-icon">📊</div>
+                <div class="nav-label">Dashboard</div>
+            </div>
+            <div class="nav-item" onclick="app.switchTab('mining', this)">
+                <div class="nav-icon">⛏️</div>
+                <div class="nav-label">Mining</div>
+            </div>
+            <div class="nav-item" onclick="app.switchTab('wallet', this)">
+                <div class="nav-icon">💼</div>
+                <div class="nav-label">Wallet</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Prevent double-click zoom
+    document.body.addEventListener('dblclick', function(event) {
+        event.preventDefault();
+    });
+
+    // App Configuration & State
+    const APP_STORAGE_KEY = 'KORKI_MINING_APP_V1';
+    const BTC_PRICE_USD = 65000; // Mock price
+    const MINING_RATE_PER_SEC = 0.00000005; // Mock earning rate
+
+    const app = {
+        state: {
+            isLoggedIn: false,
+            username: '',
+            balanceBTC: 0.00000000,
+            isMining: false,
+            sessionEarned: 0,
+            miningStartTime: null,
+            withdrawals: []
+        },
+        miningInterval: null,
+        uptimeInterval: null,
+
+        init() {
+            this.loadData();
+            if (this.state.isLoggedIn) {
+                this.showMainView();
+            } else {
+                this.showAuthView();
+            }
+        },
+
+        // --- Storage ---
+        saveData() {
+            // Don't save active mining state to prevent background logic complexity in this mock
+            const stateToSave = { ...this.state, isMining: false, sessionEarned: 0, miningStartTime: null };
+            localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(stateToSave));
+        },
+
+        loadData() {
+            const saved = localStorage.getItem(APP_STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    this.state = { ...this.state, ...parsed };
+                } catch (e) {
+                    console.error("Failed to load data", e);
+                }
+            }
+        },
+
+        // --- Navigation & Views ---
+        showAuthView() {
+            document.getElementById('main-view').classList.remove('active');
+            document.getElementById('auth-view').classList.add('active');
+        },
+
+        showMainView() {
+            document.getElementById('auth-view').classList.remove('active');
+            document.getElementById('main-view').classList.add('active');
+            document.getElementById('display-username').innerText = this.state.username;
+            this.updateUI();
+            this.renderActivity();
+        },
+
+        switchTab(tabId, element) {
+            // Update Nav UI
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // Update Content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        },
+
+        // --- Auth ---
+        login() {
+            const user = document.getElementById('username').value.trim();
+            if (user.length < 3) {
+                this.showToast("Username must be at least 3 characters", "error");
+                return;
+            }
+            this.state.isLoggedIn = true;
+            this.state.username = user;
+            
+            // Give new users a tiny starting balance for demo purposes if empty
+            if (this.state.balanceBTC === 0 && this.state.withdrawals.length === 0) {
+                this.state.balanceBTC = 0.00015000;
+            }
+
+            this.saveData();
+            this.showMainView();
+            this.showToast("✅ Login Successful");
+        },
+
+        logout() {
+            if (this.state.isMining) this.toggleMining(); // Stop mining
+            this.state.isLoggedIn = false;
+            this.state.username = '';
+            this.saveData();
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            this.showAuthView();
+        },
+
+        // --- Mining Logic ---
+        toggleMining() {
+            this.state.isMining = !this.state.isMining;
+            const indicator = document.getElementById('mining-indicator');
+            const statusText = document.getElementById('mining-status-text');
+            const btn = document.getElementById('btn-power');
+
+            if (this.state.isMining) {
+                // Start
+                indicator.classList.add('active');
+                btn.classList.add('active');
+                statusText.innerText = "MINING...";
+                this.state.miningStartTime = Date.now();
+                this.state.sessionEarned = 0;
+                
+                this.miningInterval = setInterval(() => this.mineTick(), 1000);
+                this.uptimeInterval = setInterval(() => this.updateUptime(), 1000);
+                this.showToast("⚡ Cloud Mining Started");
+            } else {
+                // Stop
+                indicator.classList.remove('active');
+                btn.classList.remove('active');
+                statusText.innerText = "OFFLINE";
+                
+                clearInterval(this.miningInterval);
+                clearInterval(this.uptimeInterval);
+                document.getElementById('mining-uptime').innerText = "00:00:00";
+                
+                this.saveData();
+                this.showToast("🛑 Mining Stopped");
+            }
+        },
+
+        mineTick() {
+            // Add random fluctuation to mining rate
+            const fluctuation = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
+            const earned = MINING_RATE_PER_SEC * fluctuation;
+            
+            this.state.balanceBTC += earned;
+            this.state.sessionEarned += earned;
+            
+            this.updateUI();
+            
+            // Save periodically
+            if (Math.random() < 0.1) this.saveData(); 
+        },
+
+        updateUptime() {
+            if (!this.state.miningStartTime) return;
+            const diff = Math.floor((Date.now() - this.state.miningStartTime) / 1000);
+            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+            const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+            const s = String(diff % 60).padStart(2, '0');
+            document.getElementById('mining-uptime').innerText = `${h}:${m}:${s}`;
+        },
+
+        // --- Wallet & Withdraw ---
+        requestWithdrawal() {
+            const amountInput = document.getElementById('withdraw-amount');
+            const addressInput = document.getElementById('withdraw-address');
+            const amount = parseFloat(amountInput.value);
+            const address = addressInput.value.trim();
+
+            if (isNaN(amount) || amount < 0.0005) {
+                this.showToast("Minimum withdrawal is 0.0005 BTC", "error");
+                return;
+            }
+            if (amount > this.state.balanceBTC) {
+                this.showToast("Insufficient balance", "error");
+                return;
+            }
+            if (address.length < 10) {
+                this.showToast("Invalid BTC address", "error");
+                return;
+            }
+
+            // Process
+            this.state.balanceBTC -= amount;
+            this.state.withdrawals.unshift({
+                id: 'WD' + Math.floor(Math.random() * 10000),
+                amount: amount,
+                address: address.substring(0,6) + '...' + address.substring(address.length-4),
+                date: new Date().toLocaleDateString(),
+                status: 'Pending'
+            });
+
+            // Keep history short
+            if (this.state.withdrawals.length > 5) this.state.withdrawals.pop();
+
+            this.saveData();
+            this.updateUI();
+            this.renderActivity();
+            
+            amountInput.value = '';
+            addressInput.value = '';
+            
+            this.showToast("📤 Withdrawal Requested Successfully");
+        },
+
+        // --- UI Updates ---
+        updateUI() {
+            const btcStr = this.state.balanceBTC.toFixed(8);
+            const usdStr = (this.state.balanceBTC * BTC_PRICE_USD).toFixed(2);
+            const sessionStr = this.state.sessionEarned.toFixed(8);
+
+            // Dashboard
+            document.getElementById('dash-btc-balance').innerText = btcStr;
+            document.getElementById('dash-usd-balance').innerText = usdStr;
+
+            // Wallet
+            document.getElementById('wallet-btc').innerText = btcStr;
+            document.getElementById('wallet-btc-usd').innerText = usdStr;
+
+            // Mining
+            document.getElementById('session-earned').innerText = sessionStr;
+        },
+
+        renderActivity() {
+            const container = document.getElementById('dash-activity');
+            container.innerHTML = '';
+
+            if (this.state.withdrawals.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 1rem;">No recent activity</div>';
+                return;
+            }
+
+            this.state.withdrawals.forEach(w => {
+                const el = document.createElement('div');
+                el.className = 'history-item';
+                el.innerHTML = `
+                    <div>
+                        <div style="font-weight: bold;">Withdrawal</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${w.date} • ${w.address}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: bold;">-${w.amount.toFixed(4)} BTC</div>
+                        <div class="status-pending">⏳ ${w.status}</div>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        },
+
+        showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = type === 'error' ? `❌ ${msg}` : `✅ ${msg}`;
+            toast.style.borderLeft = `4px solid ${type === 'error' ? 'var(--danger)' : 'var(--success)'}`;
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    };
+
+    // Initialize App on Load
+    window.addEventListener('load', () => {
+        app.init();
+    });
+
+</script>
+</body>
+</html>
