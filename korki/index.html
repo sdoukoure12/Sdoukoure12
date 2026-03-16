@@ -17,6 +17,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
+            --lightning: #a78bfa; /* Lightning purple */
             
             --safe-top: env(safe-area-inset-top, 24px);
             --safe-bottom: env(safe-area-inset-bottom, 24px);
@@ -558,6 +559,257 @@
             100% { transform: rotate(10deg); }
         }
 
+        @keyframes ln-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* --- Pool Cards --- */
+        .pool-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .pool-card {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .pool-card.active-pool {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .pool-card.error-pool {
+            border-color: var(--danger);
+        }
+
+        .pool-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .pool-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pool-name {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .pool-address {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pool-meta {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .pool-hashrate {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .pool-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            margin-top: 0.2rem;
+        }
+
+        .badge-active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-standby { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+        .badge-error { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        /* --- Lightning Pay --- */
+        .ln-address-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .ln-address-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--surface-light);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .ln-icon {
+            font-size: 1.5rem;
+            animation: ln-flash 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .ln-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ln-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .ln-addr {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--lightning);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-ln {
+            background: rgba(167, 139, 250, 0.15);
+            color: var(--lightning);
+            border: 1px solid var(--lightning);
+            padding: 0.5rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .btn-ln:active { background: rgba(167, 139, 250, 0.3); }
+
+        /* --- Monitor Tab --- */
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .monitor-box {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .monitor-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .monitor-val {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .monitor-val.green { color: var(--success); }
+        .monitor-val.yellow { color: var(--primary); }
+        .monitor-val.red { color: var(--danger); }
+        .monitor-val.blue { color: var(--secondary); }
+
+        /* Hashrate sparkline */
+        .sparkline-wrap {
+            margin-top: 0.5rem;
+            height: 36px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .spark-bar {
+            flex: 1;
+            background: var(--secondary);
+            border-radius: 2px 2px 0 0;
+            opacity: 0.7;
+            transition: height 0.3s;
+            min-height: 2px;
+        }
+
+        /* Error Log */
+        .error-log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
+        .error-log-list::-webkit-scrollbar { display: none; }
+
+        .error-entry {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid var(--danger);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.8rem;
+        }
+
+        .error-component {
+            font-weight: bold;
+            color: var(--danger);
+        }
+
+        .error-time {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+
+        /* Pool status indicator in mining tab */
+        .pool-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface-light);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+        }
+
+        .pool-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            flex-shrink: 0;
+        }
+
+        .pool-dot.error { background: var(--danger); }
+
+        /* Tab switching helper - 5-item nav support */
+        .bottom-nav .nav-item {
+            padding: 0.75rem 0;
+        }
+
+        .bottom-nav .nav-icon {
+            font-size: 1.3rem;
+        }
+
+        .bottom-nav .nav-label {
+            font-size: 0.68rem;
+        }
+
     </style>
 </head>
 <body>
@@ -653,6 +905,18 @@
                     <p style="color: var(--text-muted); margin-top: 0.5rem;">Connect to Korki servers to start earning.</p>
                 </div>
 
+                <div class="card">
+                    <div class="card-label" style="margin-bottom: 0.75rem;">Active Pool</div>
+                    <div class="pool-status-bar">
+                        <div class="pool-dot" id="pool-status-dot"></div>
+                        <div style="flex:1">
+                            <div style="font-weight:bold; font-size:0.9rem;" id="mining-pool-name">—</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);" id="mining-pool-ln">—</div>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--secondary);" id="mining-pool-hr">— TH/s</div>
+                    </div>
+                </div>
+
                 <div class="mining-control">
                     <div id="mining-indicator" class="mining-circle">
                         <div class="mining-icon">⛏️</div>
@@ -712,6 +976,14 @@
                 </div>
 
                 <div class="card">
+                    <h3 style="margin-bottom: 1rem;">⚡ Lightning Pay</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Send instant sats to a Lightning address. Each payment: 1000 sats (0.00001 BTC).</p>
+                    <div class="ln-address-list" id="ln-address-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
                     <h3 style="margin-bottom: 1rem;">Withdraw Funds</h3>
                     <div class="withdraw-form">
                         <div class="input-group">
@@ -730,6 +1002,67 @@
                 </div>
             </div>
 
+            <!-- POOLS TAB -->
+            <div id="tab-pools" class="tab-content">
+                <div class="card">
+                    <div class="card-label" style="margin-bottom:0.25rem;">Mining Pools</div>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Tap a pool to switch. Each pool has a dedicated Lightning payout address.</p>
+                </div>
+                <div class="pool-list" id="pool-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="card" style="font-size:0.8rem; color:var(--text-muted); text-align:center;">
+                    ⚡ Pool switches complete automatically. Mining resumes on new pool.
+                </div>
+            </div>
+
+            <!-- MONITOR TAB -->
+            <div id="tab-monitor" class="tab-content">
+                <div class="card">
+                    <div class="card-label" style="margin-bottom:0.75rem;">Node Stats</div>
+                    <div class="monitor-grid">
+                        <div class="monitor-box">
+                            <div class="monitor-label">Status</div>
+                            <div class="monitor-val green" id="mon-status">Idle</div>
+                        </div>
+                        <div class="monitor-box">
+                            <div class="monitor-label">Hash Rate</div>
+                            <div class="monitor-val blue" id="mon-hashrate">0 TH/s</div>
+                        </div>
+                        <div class="monitor-box">
+                            <div class="monitor-label">Pool Switches</div>
+                            <div class="monitor-val yellow" id="mon-switches">0</div>
+                        </div>
+                        <div class="monitor-box">
+                            <div class="monitor-label">⚡ LN Payments</div>
+                            <div class="monitor-val" id="mon-ln-count">0</div>
+                        </div>
+                        <div class="monitor-box">
+                            <div class="monitor-label">Session Uptime</div>
+                            <div class="monitor-val" id="mon-uptime">—</div>
+                        </div>
+                        <div class="monitor-box">
+                            <div class="monitor-label">Errors</div>
+                            <div class="monitor-val red" id="mon-errors">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label" style="margin-bottom:0.5rem;">Hashrate History (60s)</div>
+                    <div class="sparkline-wrap" id="sparkline">
+                        <!-- Bars populated by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label" style="margin-bottom:0.75rem;">Error Log</div>
+                    <div class="error-log-list" id="error-log-list">
+                        <div style="color:var(--text-muted); text-align:center; font-size:0.85rem;">No errors recorded</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Bottom Navigation -->
@@ -742,9 +1075,17 @@
                 <div class="nav-icon">⛏️</div>
                 <div class="nav-label">Mining</div>
             </div>
+            <div class="nav-item" onclick="app.switchTab('pools', this)">
+                <div class="nav-icon">🔗</div>
+                <div class="nav-label">Pools</div>
+            </div>
             <div class="nav-item" onclick="app.switchTab('wallet', this)">
                 <div class="nav-icon">💼</div>
                 <div class="nav-label">Wallet</div>
+            </div>
+            <div class="nav-item" onclick="app.switchTab('monitor', this)">
+                <div class="nav-icon">📡</div>
+                <div class="nav-label">Monitor</div>
             </div>
         </div>
 
@@ -761,6 +1102,16 @@
     const APP_STORAGE_KEY = 'KORKI_MINING_APP_V1';
     const BTC_PRICE_USD = 65000; // Mock price
     const MINING_RATE_PER_SEC = 0.00000005; // Mock earning rate
+    const LN_PAYMENT_AMOUNT = 0.00001; // 1000 sats per Lightning payment
+
+    // Lightning Network Pools (5 pools, each with a dedicated Lightning address)
+    const LIGHTNING_POOLS = [
+        { id: 1, name: 'Slush Pool',    host: 'stratum.slushpool.com',    lightning: 'korki1@lightningmin.io', icon: '🏔️', hashrate: 155 },
+        { id: 2, name: 'Antpool',       host: 'stratum.antpool.com',      lightning: 'korki2@lightningmin.io', icon: '🐜', hashrate: 142 },
+        { id: 3, name: 'F2Pool',        host: 'stratum.f2pool.com',       lightning: 'korki3@lightningmin.io', icon: '🐟', hashrate: 148 },
+        { id: 4, name: 'ViaBTC',        host: 'stratum.viabtc.com',       lightning: 'korki4@lightningmin.io', icon: '🔷', hashrate: 150 },
+        { id: 5, name: 'Binance Pool',  host: 'stratum.binancepool.com',  lightning: 'korki5@lightningmin.io', icon: '🟡', hashrate: 160 }
+    ];
 
     const app = {
         state: {
@@ -770,13 +1121,26 @@
             isMining: false,
             sessionEarned: 0,
             miningStartTime: null,
-            withdrawals: []
+            withdrawals: [],
+            activePool: 0,
+            poolSwitchCount: 0,
+            lightningPayments: [],
+            errorLog: [],
+            hashrateHistory: []
         },
         miningInterval: null,
         uptimeInterval: null,
+        monitorInterval: null,
 
         init() {
             this.loadData();
+            // Ensure all array fields are initialized (handles data migration)
+            if (!Array.isArray(this.state.withdrawals)) this.state.withdrawals = [];
+            if (!Array.isArray(this.state.lightningPayments)) this.state.lightningPayments = [];
+            if (!Array.isArray(this.state.errorLog)) this.state.errorLog = [];
+            if (!Array.isArray(this.state.hashrateHistory)) this.state.hashrateHistory = [];
+            if (typeof this.state.activePool !== 'number') this.state.activePool = 0;
+            if (typeof this.state.poolSwitchCount !== 'number') this.state.poolSwitchCount = 0;
             if (this.state.isLoggedIn) {
                 this.showMainView();
             } else {
@@ -787,8 +1151,18 @@
         // --- Storage ---
         saveData() {
             // Don't save active mining state to prevent background logic complexity in this mock
-            const stateToSave = { ...this.state, isMining: false, sessionEarned: 0, miningStartTime: null };
-            localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(stateToSave));
+            const stateToSave = {
+                ...this.state,
+                isMining: false,
+                sessionEarned: 0,
+                miningStartTime: null,
+                hashrateHistory: []
+            };
+            try {
+                localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(stateToSave));
+            } catch (e) {
+                this.logError('Storage', 'Failed to save data: ' + e.message);
+            }
         },
 
         loadData() {
@@ -798,6 +1172,7 @@
                     const parsed = JSON.parse(saved);
                     this.state = { ...this.state, ...parsed };
                 } catch (e) {
+                    this.logError('Storage', 'Failed to load data: ' + e.message);
                     console.error("Failed to load data", e);
                 }
             }
@@ -815,6 +1190,14 @@
             document.getElementById('display-username').innerText = this.state.username;
             this.updateUI();
             this.renderActivity();
+            this.renderPools();
+            this.renderLightningAddresses();
+            this.renderMonitor();
+            this.updateMiningPoolDisplay();
+            // Start periodic monitor refresh
+            if (!this.monitorInterval) {
+                this.monitorInterval = setInterval(() => this.collectMonitoringData(), 1000);
+            }
         },
 
         switchTab(tabId, element) {
@@ -849,6 +1232,10 @@
 
         logout() {
             if (this.state.isMining) this.toggleMining(); // Stop mining
+            if (this.monitorInterval) {
+                clearInterval(this.monitorInterval);
+                this.monitorInterval = null;
+            }
             this.state.isLoggedIn = false;
             this.state.username = '';
             this.saveData();
@@ -858,6 +1245,18 @@
         },
 
         // --- Mining Logic ---
+        pauseMining() {
+            clearInterval(this.miningInterval);
+            clearInterval(this.uptimeInterval);
+            this.miningInterval = null;
+            this.uptimeInterval = null;
+        },
+
+        resumeMining() {
+            this.miningInterval = setInterval(() => this.mineTick(), 1000);
+            this.uptimeInterval = setInterval(() => this.updateUptime(), 1000);
+        },
+
         toggleMining() {
             this.state.isMining = !this.state.isMining;
             const indicator = document.getElementById('mining-indicator');
@@ -872,8 +1271,8 @@
                 this.state.miningStartTime = Date.now();
                 this.state.sessionEarned = 0;
                 
-                this.miningInterval = setInterval(() => this.mineTick(), 1000);
-                this.uptimeInterval = setInterval(() => this.updateUptime(), 1000);
+                this.resumeMining();
+                this.updateMiningPoolDisplay();
                 this.showToast("⚡ Cloud Mining Started");
             } else {
                 // Stop
@@ -881,27 +1280,34 @@
                 btn.classList.remove('active');
                 statusText.innerText = "OFFLINE";
                 
-                clearInterval(this.miningInterval);
-                clearInterval(this.uptimeInterval);
+                this.pauseMining();
                 document.getElementById('mining-uptime').innerText = "00:00:00";
                 
                 this.saveData();
+                this.updateMiningPoolDisplay();
                 this.showToast("🛑 Mining Stopped");
             }
         },
 
         mineTick() {
-            // Add random fluctuation to mining rate
-            const fluctuation = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
-            const earned = MINING_RATE_PER_SEC * fluctuation;
-            
-            this.state.balanceBTC += earned;
-            this.state.sessionEarned += earned;
-            
-            this.updateUI();
-            
-            // Save periodically
-            if (Math.random() < 0.1) this.saveData(); 
+            try {
+                const pool = LIGHTNING_POOLS[this.state.activePool];
+                // Simulate pool-specific yield variation (for demo purposes only)
+                const fluctuation = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
+                const poolBonus = pool.hashrate / 150; // simulated relative pool efficiency factor
+                const earned = MINING_RATE_PER_SEC * fluctuation * poolBonus;
+                
+                this.state.balanceBTC += earned;
+                this.state.sessionEarned += earned;
+                
+                this.updateUI();
+                
+                // Save periodically
+                if (Math.random() < 0.1) this.saveData();
+            } catch (e) {
+                this.logError('Mining', 'mineTick error: ' + e.message);
+                // Don't crash the interval on error
+            }
         },
 
         updateUptime() {
@@ -933,27 +1339,247 @@
                 return;
             }
 
-            // Process
-            this.state.balanceBTC -= amount;
-            this.state.withdrawals.unshift({
-                id: 'WD' + Math.floor(Math.random() * 10000),
-                amount: amount,
-                address: address.substring(0,6) + '...' + address.substring(address.length-4),
-                date: new Date().toLocaleDateString(),
-                status: 'Pending'
+            try {
+                // Process
+                this.state.balanceBTC -= amount;
+                this.state.withdrawals.unshift({
+                    id: 'WD' + Math.floor(Math.random() * 10000),
+                    ts: Date.now(),
+                    amount: amount,
+                    address: address.substring(0,6) + '...' + address.substring(address.length-4),
+                    date: new Date().toLocaleDateString(),
+                    status: 'Pending'
+                });
+
+                // Keep history short
+                if (this.state.withdrawals.length > 5) this.state.withdrawals.pop();
+
+                this.saveData();
+                this.updateUI();
+                this.renderActivity();
+                
+                amountInput.value = '';
+                addressInput.value = '';
+                
+                this.showToast("📤 Withdrawal Requested Successfully");
+            } catch (e) {
+                this.logError('Withdrawal', e.message);
+                this.showToast("Withdrawal failed. Please try again.", "error");
+            }
+        },
+
+        // --- Lightning Network ---
+        sendLightningPayment(poolIndex) {
+            const pool = LIGHTNING_POOLS[poolIndex];
+            if (!pool) {
+                this.showToast("Invalid Lightning address", "error");
+                return;
+            }
+            if (this.state.balanceBTC < LN_PAYMENT_AMOUNT) {
+                this.showToast("Insufficient balance (need 0.00001 BTC / 1000 sats)", "error");
+                return;
+            }
+
+            try {
+                this.state.balanceBTC -= LN_PAYMENT_AMOUNT;
+                this.state.lightningPayments.unshift({
+                    id: 'LN' + Date.now(),
+                    ts: Date.now(),
+                    pool: pool.name,
+                    address: pool.lightning,
+                    amount: LN_PAYMENT_AMOUNT,
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString(),
+                    status: 'Completed'
+                });
+
+                // Keep history short
+                if (this.state.lightningPayments.length > 10) this.state.lightningPayments.pop();
+
+                this.saveData();
+                this.updateUI();
+                this.renderActivity();
+                this.renderMonitor();
+
+                this.showToast(`⚡ Sent 1000 sats → ${pool.lightning}`);
+            } catch (e) {
+                this.logError('Lightning Payment', e.message);
+                this.showToast("Lightning payment failed", "error");
+            }
+        },
+
+        // --- Pool Switching ---
+        switchPool(poolIndex) {
+            if (poolIndex === this.state.activePool) {
+                this.showToast(`Already on ${LIGHTNING_POOLS[poolIndex].name}`, "error");
+                return;
+            }
+
+            const wasActive = this.state.isMining;
+            try {
+                if (wasActive) {
+                    this.pauseMining();
+                }
+
+                this.state.activePool = poolIndex;
+                this.state.poolSwitchCount++;
+                this.saveData();
+
+                if (wasActive) {
+                    this.resumeMining();
+                }
+
+                this.renderPools();
+                this.updateMiningPoolDisplay();
+                this.renderMonitor();
+                this.showToast(`🔗 Switched to ${LIGHTNING_POOLS[poolIndex].name}`);
+            } catch (e) {
+                this.logError('Pool Switch', e.message);
+                this.showToast("Pool switch failed. Please try again.", "error");
+
+                // Attempt recovery: restart mining if it was active
+                if (wasActive && !this.miningInterval) {
+                    try {
+                        this.resumeMining();
+                    } catch (recoveryErr) {
+                        this.logError('Pool Recovery', recoveryErr.message);
+                    }
+                }
+            }
+        },
+
+        updateMiningPoolDisplay() {
+            const pool = LIGHTNING_POOLS[this.state.activePool];
+            const nameEl = document.getElementById('mining-pool-name');
+            const lnEl = document.getElementById('mining-pool-ln');
+            const hrEl = document.getElementById('mining-pool-hr');
+            const dotEl = document.getElementById('pool-status-dot');
+            if (!nameEl) return;
+            nameEl.innerText = pool.name;
+            lnEl.innerText = pool.lightning;
+            hrEl.innerText = this.state.isMining ? `${pool.hashrate} TH/s` : '— TH/s';
+            dotEl.className = 'pool-dot' + (this.state.isMining ? '' : ' error');
+        },
+
+        // --- Error Handling ---
+        logError(component, message) {
+            this.state.errorLog.unshift({
+                component: component,
+                message: message,
+                time: new Date().toLocaleTimeString()
             });
+            if (this.state.errorLog.length > 10) this.state.errorLog.pop();
+            console.error(`[Korki][${component}] ${message}`);
+        },
 
-            // Keep history short
-            if (this.state.withdrawals.length > 5) this.state.withdrawals.pop();
+        // --- Monitoring ---
+        collectMonitoringData() {
+            const pool = LIGHTNING_POOLS[this.state.activePool];
+            const hr = this.state.isMining
+                ? pool.hashrate * (0.88 + Math.random() * 0.24)
+                : 0;
+            this.state.hashrateHistory.push(parseFloat(hr.toFixed(1)));
+            if (this.state.hashrateHistory.length > 60) this.state.hashrateHistory.shift();
+            this.renderMonitor();
+        },
 
-            this.saveData();
-            this.updateUI();
-            this.renderActivity();
-            
-            amountInput.value = '';
-            addressInput.value = '';
-            
-            this.showToast("📤 Withdrawal Requested Successfully");
+        renderMonitor() {
+            const pool = LIGHTNING_POOLS[this.state.activePool];
+            const hr = this.state.hashrateHistory;
+            const currentHr = hr.length > 0 ? hr[hr.length - 1] : 0;
+
+            const statusEl = document.getElementById('mon-status');
+            const hrEl = document.getElementById('mon-hashrate');
+            const switchEl = document.getElementById('mon-switches');
+            const lnEl = document.getElementById('mon-ln-count');
+            const uptimeEl = document.getElementById('mon-uptime');
+            const errEl = document.getElementById('mon-errors');
+            if (!statusEl) return;
+
+            statusEl.innerText = this.state.isMining ? 'Mining' : 'Idle';
+            statusEl.className = 'monitor-val ' + (this.state.isMining ? 'green' : '');
+            hrEl.innerText = currentHr > 0 ? currentHr.toFixed(1) + ' TH/s' : '0 TH/s';
+            switchEl.innerText = this.state.poolSwitchCount || 0;
+            lnEl.innerText = this.state.lightningPayments.length;
+            const errorCount = this.state.errorLog.length;
+            errEl.innerText = errorCount;
+            errEl.className = 'monitor-val ' + (errorCount > 0 ? 'red' : 'green');
+
+            // Uptime display
+            if (this.state.isMining && this.state.miningStartTime) {
+                const diff = Math.floor((Date.now() - this.state.miningStartTime) / 1000);
+                const h = String(Math.floor(diff / 3600)).padStart(2,'0');
+                const m = String(Math.floor((diff % 3600)/60)).padStart(2,'0');
+                const s = String(diff % 60).padStart(2,'0');
+                uptimeEl.innerText = `${h}:${m}:${s}`;
+            } else {
+                uptimeEl.innerText = '—';
+            }
+
+            // Sparkline
+            const sparkEl = document.getElementById('sparkline');
+            if (sparkEl && hr.length > 0) {
+                const maxHr = Math.max(...hr, 1);
+                sparkEl.innerHTML = hr.map(v => {
+                    const pct = Math.max(4, Math.round((v / maxHr) * 100));
+                    const color = v > 0 ? 'var(--secondary)' : 'var(--surface-light)';
+                    return `<div class="spark-bar" style="height:${pct}%; background:${color};"></div>`;
+                }).join('');
+            }
+
+            // Error log
+            const logEl = document.getElementById('error-log-list');
+            if (logEl) {
+                const errors = this.state.errorLog;
+                if (errors.length === 0) {
+                    logEl.innerHTML = '<div style="color:var(--text-muted); text-align:center; font-size:0.85rem;">No errors recorded</div>';
+                } else {
+                    logEl.innerHTML = errors.map(e =>
+                        `<div class="error-entry">
+                            <div><span class="error-component">[${e.component}]</span> ${e.message}</div>
+                            <div class="error-time">${e.time}</div>
+                        </div>`
+                    ).join('');
+                }
+            }
+        },
+
+        // --- Render Pools Tab ---
+        renderPools() {
+            const container = document.getElementById('pool-list');
+            if (!container) return;
+            container.innerHTML = LIGHTNING_POOLS.map((pool, i) => {
+                const isActive = i === this.state.activePool;
+                const badge = isActive ? '<span class="pool-badge badge-active">● Active</span>' : '<span class="pool-badge badge-standby">Standby</span>';
+                return `
+                    <div class="pool-card ${isActive ? 'active-pool' : ''}" onclick="app.switchPool(${i})">
+                        <div class="pool-icon">${pool.icon}</div>
+                        <div class="pool-info">
+                            <div class="pool-name">${pool.name}</div>
+                            <div class="pool-address">⚡ ${pool.lightning}</div>
+                        </div>
+                        <div class="pool-meta">
+                            <div class="pool-hashrate">${pool.hashrate} TH/s</div>
+                            ${badge}
+                        </div>
+                    </div>`;
+            }).join('');
+        },
+
+        // --- Render Lightning Addresses in Wallet ---
+        renderLightningAddresses() {
+            const container = document.getElementById('ln-address-list');
+            if (!container) return;
+            container.innerHTML = LIGHTNING_POOLS.map((pool, i) =>
+                `<div class="ln-address-item">
+                    <div class="ln-icon">⚡</div>
+                    <div class="ln-info">
+                        <div class="ln-label">${pool.icon} ${pool.name}</div>
+                        <div class="ln-addr">${pool.lightning}</div>
+                    </div>
+                    <button class="btn-ln" onclick="app.sendLightningPayment(${i})">Pay</button>
+                </div>`
+            ).join('');
         },
 
         // --- UI Updates ---
@@ -976,26 +1602,44 @@
 
         renderActivity() {
             const container = document.getElementById('dash-activity');
+            if (!container) return;
             container.innerHTML = '';
 
-            if (this.state.withdrawals.length === 0) {
+            // Combine withdrawals and lightning payments, sorted by timestamp (newest first)
+            const allActivity = [
+                ...this.state.withdrawals.map(w => ({ ...w, type: 'withdrawal' })),
+                ...this.state.lightningPayments.map(p => ({ ...p, type: 'lightning' }))
+            ].sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
+            if (allActivity.length === 0) {
                 container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 1rem;">No recent activity</div>';
                 return;
             }
 
-            this.state.withdrawals.forEach(w => {
+            allActivity.forEach(item => {
                 const el = document.createElement('div');
                 el.className = 'history-item';
-                el.innerHTML = `
-                    <div>
-                        <div style="font-weight: bold;">Withdrawal</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">${w.date} • ${w.address}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-weight: bold;">-${w.amount.toFixed(4)} BTC</div>
-                        <div class="status-pending">⏳ ${w.status}</div>
-                    </div>
-                `;
+                if (item.type === 'lightning') {
+                    el.innerHTML = `
+                        <div>
+                            <div style="font-weight: bold;">⚡ Lightning Pay</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${item.date} • ${item.address}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold; color: var(--lightning);">-${item.amount.toFixed(5)} BTC</div>
+                            <div class="status-completed">✓ ${item.status}</div>
+                        </div>`;
+                } else {
+                    el.innerHTML = `
+                        <div>
+                            <div style="font-weight: bold;">Withdrawal</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${item.date} • ${item.address}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold;">-${item.amount.toFixed(4)} BTC</div>
+                            <div class="status-pending">⏳ ${item.status}</div>
+                        </div>`;
+                }
                 container.appendChild(el);
             });
         },
